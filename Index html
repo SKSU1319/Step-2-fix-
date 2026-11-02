@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step2Fix - Instant No-BS Tech Solutions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: #0b1120; color: #f8fafc; padding: 15px; }
+    .container { max-width: 760px; margin: 30px auto; background: #1e293b; padding: 25px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+    
+    header { text-align: center; margin-bottom: 25px; }
+    h1 { font-size: 26px; color: #38bdf8; letter-spacing: -0.5px; }
+    p.tagline { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+
+    .search-wrapper { margin-bottom: 20px; }
+    #searchBar { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
+    #searchBar:focus { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+
+    .category-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; }
+    .pill { background: #334155; color: #cbd5e1; padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; border: none; transition: 0.2s; }
+    .pill:hover, .pill.active { background: #38bdf8; color: #0b1120; font-weight: bold; }
+
+    .ad-banner { background: #172033; border: 1px dashed #475569; border-radius: 6px; padding: 10px; text-align: center; font-size: 12px; color: #64748b; margin-bottom: 20px; }
+
+    .error-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 18px; margin-bottom: 16px; transition: transform 0.15s ease; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .platform-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+    .badge-android { background: #065f46; color: #34d399; }
+    .badge-windows { background: #1e40af; color: #60a5fa; }
+    .badge-gaming { background: #831843; color: #f472b6; }
+    
+    .card-title { font-size: 16px; font-weight: 600; color: #f1f5f9; margin-bottom: 12px; line-height: 1.4; }
+    
+    .steps-list { list-style: none; counter-reset: step-idx; }
+    .steps-list li { position: relative; padding-left: 28px; margin-bottom: 8px; font-size: 13.5px; color: #cbd5e1; line-height: 1.5; }
+    .steps-list li::before { content: counter(step-idx); counter-increment: step-idx; position: absolute; left: 0; top: 0; background: #38bdf8; color: #0b1120; width: 19px; height: 19px; border-radius: 50%; font-size: 11px; font-weight: bold; text-align: center; line-height: 19px; }
+
+    .monetize-strip { margin-top: 14px; padding: 8px 12px; background: #1e293b; border-left: 3px solid #10b981; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .monetize-strip a { color: #34d399; text-decoration: none; font-weight: bold; }
+    .monetize-strip a:hover { text-decoration: underline; }
+
+    .empty-state { text-align: center; color: #64748b; padding: 30px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Step2Fix</h1>
+    <p class="tagline">No 10-minute intros. Exact 2-step verified fixes.</p>
+  </header>
+
+  <div class="search-wrapper">
+    <input type="text" id="searchBar" placeholder="Search error (e.g., download failed, 0x800, mic lag, 5G drop)...">
+  </div>
+
+  <div class="category-pills">
+    <button class="pill active" onclick="filterCategory('All')">All</button>
+    <button class="pill" onclick="filterCategory('Android')">Android</button>
+    <button class="pill" onclick="filterCategory('Gaming')">Gaming</button>
+    <button class="pill" onclick="filterCategory('Windows')">Windows PC</button>
+  </div>
+
+  <div class="ad-banner">Top Responsive Ad Slot (AdSense / Monetag Auto Unit)</div>
+
+  <div id="cardsList"></div>
+  <div id="emptyState" class="empty-state">No matching fix found. Try another error code or term.</div>
+</div>
+
+<script>
+// Verified High-Volume Issue Database
+const errorDatabase = [
+  {
+    id: 1,
+    title: "Google Play Store 'Download Pending' or 'Can't download app'",
+    category: "Android",
+    badgeClass: "badge-android",
+    step1: "Settings > Apps > Google Play Store > Storage > Clear Cache aur fir Clear Data karein.",
+    step2: "Play Store kholkar Settings > Network Preferences me jakar 'Over any network' select karein.",
+    affiliateText: "Low internal storage issue?",
+    affiliateLinkText: "Check Best Budget Type-C Flash Drives",
+    affiliateUrl: "#"
+  },
+  {
+    id: 2,
+    title: "Free Fire / BGMI 'Download Failed Because You May Not Have Purchased This App'",
+    category: "Gaming",
+    badgeClass: "badge-gaming",
+    step1: "File Manager me Android > obb folder check karein; game ka OBB folder sahi package name ke sath exist hona chahiye.",
+    step2: "Phone Settings > App Management > Game > Permissions me jakar 'Storage / All Files Access' allow karein.",
+    affiliateText: "Facing high ping spikes?",
+    affiliateLinkText: "Check Gaming VPN & DNS Tweaks",
+    affiliateUrl: "#"
+  },
+  {
+    id: 3,
+    title: "Windows Update Error 0x80070002 or 0x80070003",
+    category: "Windows",
+    badgeClass: "badge-windows",
+    step1: "Win + R dabayein, type karein 'services.msc', Windows Update service ko dhoondh kar 'Stop' karein.",
+    step2: "C:\\Windows\\SoftwareDistribution folder me jakar sara data delete karein, fir service wapas 'Start' karein.",
+    affiliateText: "Speed up slow boot time?",
+    affiliateLinkText: "View Top NVMe SSD Deals",
+    affiliateUrl: "#"
+  },
+  {
+    id: 4,
+    title: "5G Smartphone Automatic Drop to 4G LTE Repeatedly",
+    category: "Android",
+    badgeClass: "badge-android",
+    step1: "Settings > Mobile Network > SIM 1 > Preferred network type ko '5G/4G/3G/2G (Auto)' par set karein.",
+    step2: "Battery Settings me check karein; agar 'Smart 5G' ya 'Power Saving 5G' on hai to use OFF karein taaki signal force 5G rahe.",
+    affiliateText: "Weak room network?",
+    affiliateLinkText: "Explore 5G Wi-Fi Mesh Routers",
+    affiliateUrl: "#"
+  },
+  {
+    id: 5,
+    title: "Discord / In-Game Voice Chat Mic Not Picking Up Voice (Mobile/PC)",
+    category: "Gaming",
+    badgeClass: "badge-gaming",
+    step1: "Audio settings me Input Mode ko 'Voice Activity' se badal kar testing ke liye 'Push to Talk' karein.",
+    step2: "Phone/Windows Privacy Settings me Microphone Access on karein aur app ko 'Exclusive Mode' band karein.",
+    affiliateText: "Clear noise-cancelling mics?",
+    affiliateLinkText: "Best Budget Gaming Earphones",
+    affiliateUrl: "#"
+  },
+  {
+    id: 6,
+    title: "Windows 'No Internet, Secured' Wi-Fi Error",
+    category: "Windows",
+    badgeClass: "badge-windows",
+    step1: "CMD ko Run as Administrator karein aur type karein: 'netsh winsock reset' aur enter dabayein.",
+    step2: "Agli command run karein: 'ipconfig /flushdns' aur system ko restart karein.",
+    affiliateText: "Weak laptop Wi-Fi card?",
+    affiliateLinkText: "Plug-and-play USB Wi-Fi Dongles",
+    affiliateUrl: "#"
+  },
+  {
+    id: 7,
+    title: "Android 'System UI Isn't Responding' Black Screen Freeze",
+    category: "Android",
+    badgeClass: "badge-android",
+    step1: "Power Button + Volume Down ko 10-12 second daba kar force restart karein.",
+    step2: "Restart ke baad Settings > Apps > Android System WebView ka 'Uninstall Updates' karein aur cache clear karein.",
+    affiliateText: "Phone storage almost 95% full?",
+    affiliateLinkText: "High Endurance SD Cards",
+    affiliateUrl: "#"
+  },
+  {
+    id: 8,
+    title: "Game Lag & Frame Drops After System OS Update",
+    category: "Gaming",
+    badgeClass: "badge-gaming",
+    step1: "Game Turbo / Ultra Game Mode me jakar game ka graphic profile 'Balanced/Smooth' par set karein (HD na rakhein).",
+    step2: "Developer Options me jakar 'Disable HW Overlays' (Force GPU for screen compositing) ko ON karein.",
+    affiliateText: "Phone heat control accessory?",
+    affiliateLinkText: "Magnetic Phone Cooling Fans",
+    affiliateUrl: "#"
+  },
+  {
+    id: 9,
+    title: "Google Chrome 'Aw, Snap!' or STATUS_ACCESS_VIOLATION Crash",
+    category: "Windows",
+    badgeClass: "badge-windows",
+    step1: "Chrome Settings > System me jakar 'Use hardware acceleration when available' ko OFF karein.",
+    step2: "Chrome shortcut properties me Target ke end me ek space dekar '--no-sandbox' add karke test karein.",
+    affiliateText: "High RAM consumption fix:",
+    affiliateLinkText: "Upgrade DDR4/DDR5 Laptop RAM",
+    affiliateUrl: "#"
+  },
+  {
+    id: 10,
+    title: "Bluetooth Earbuds Audio Delay / Sound Lag While Watching Videos",
+    category: "Android",
+    badgeClass: "badge-android",
+    step1: "Developer Options kholen aur 'Bluetooth Audio Codec' ko SBC/AAC se badal kar 'aptX' ya 'LDAC' (agar supported ho) set karein.",
+    step2: "Earbuds reset karein (dono buds ko case me rakh kar 10 second press hold) aur fir fresh pair karein.",
+    affiliateText: "Low-latency wireless buds:",
+    affiliateLinkText: "Explore 40ms Ultra Low Latency TWS",
+    affiliateUrl: "#"
+  }
+];
+
+let activeCategory = 'All';
+
+function renderCards(data) {
+  const container = document.getElementById('cardsList');
+  const emptyState = document.getElementById('emptyState');
+  container.innerHTML = '';
+
+  if (data.length === 0) {
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'error-card';
+    card.innerHTML = `
+      <div class="card-meta">
+        <span class="platform-badge ${item.badgeClass}">${item.category}</span>
+      </div>
+      <div class="card-title">${item.title}</div>
+      <ol class="steps-list">
+        <li>${item.step1}</li>
+        <li>${item.step2}</li>
+      </ol>
+      <div class="monetize-strip">
+        <span>${item.affiliateText}</span>
+        <a href="${item.affiliateUrl}" target="_blank">${item.affiliateLinkText} &rarr;</a>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Live Search logic
+document.getElementById('searchBar').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase().trim();
+  const filtered = errorDatabase.filter(item => {
+    const matchCategory = (activeCategory === 'All' || item.category === activeCategory);
+    const matchQuery = item.title.toLowerCase().includes(query) ||
+                       item.step1.toLowerCase().includes(query) ||
+                       item.step2.toLowerCase().includes(query);
+    return matchCategory && matchQuery;
+  });
+  renderCards(filtered);
+});
+
+// Category Filter logic
+function filterCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('.pill').forEach(btn => {
+    btn.classList.toggle('active', btn.innerText.includes(cat));
+  });
+  
+  const query = document.getElementById('searchBar').value.toLowerCase().trim();
+  const filtered = errorDatabase.filter(item => {
+    const matchCategory = (activeCategory === 'All' || item.category === activeCategory);
+    const matchQuery = item.title.toLowerCase().includes(query) ||
+                       item.step1.toLowerCase().includes(query) ||
+                       item.step2.toLowerCase().includes(query);
+    return matchCategory && matchQuery;
+  });
+  renderCards(filtered);
+}
+
+// Initial render
+renderCards(errorDatabase);
+</script>
+
+</body>
+</html>
